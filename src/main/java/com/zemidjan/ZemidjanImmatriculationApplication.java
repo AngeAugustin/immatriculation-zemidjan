@@ -10,3 +10,4 @@ public class ZemidjanImmatriculationApplication {
         SpringApplication.run(ZemidjanImmatriculationApplication.class, args);
     }
 }
+
