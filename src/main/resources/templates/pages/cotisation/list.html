@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-cash-coin"></i> Liste des cotisations</h2>
+                <div>
+                    <a th:href="@{/cotisations/rapport}" class="btn btn-info text-white me-2">
+                        <i class="bi bi-file-earmark-text"></i> Générer un rapport
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Filtres et recherche -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="moisFilter" class="form-label">Mois</label>
+                            <select class="form-select" id="moisFilter">
+                                <option value="">Tous les mois</option>
+                                <option value="Janvier">Janvier</option>
+                                <option value="Février">Février</option>
+                                <option value="Mars">Mars</option>
+                                <option value="Avril">Avril</option>
+                                <option value="Mai">Mai</option>
+                                <option value="Juin">Juin</option>
+                                <option value="Juillet">Juillet</option>
+                                <option value="Août">Août</option>
+                                <option value="Septembre">Septembre</option>
+                                <option value="Octobre">Octobre</option>
+                                <option value="Novembre">Novembre</option>
+                                <option value="Décembre">Décembre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="anneeFilter" class="form-label">Année</label>
+                            <select class="form-select" id="anneeFilter">
+                                <option value="">Toutes les années</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <label for="communeFilter" class="form-label">Commune</label>
+                            <select class="form-select" id="communeFilter">
+                                <option value="">Toutes les communes</option>
+                                <option value="Cotonou">Cotonou</option>
+                                <option value="Porto-Novo">Porto-Novo</option>
+                                <option value="Parakou">Parakou</option>
+                                <option value="Abomey-Calavi">Abomey-Calavi</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Liste des cotisations -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Zémidjan</th>
+                                    <th>Numéro immat.</th>
+                                    <th>Période</th>
+                                    <th>Montant</th>
+                                    <th>Date de paiement</th>
+                                    <th>Enregistré par</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cotisation : ${cotisations}">
+                                    <td th:text="${cotisation.id}">1</td>
+                                    <td>
+                                        <a th:href="@{'/zemidjans/' + ${cotisation.zemidjan.id}}" class="text-decoration-none">
+                                            <span th:text="${cotisation.zemidjan.prenom + ' ' + cotisation.zemidjan.nom}">
+                                                Nom complet
+                                            </span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${cotisation.zemidjan.numeroImmatriculation}">
+                                            XXX-XX-XXXXX-X
+                                        </span>
+                                    </td>
+                                    <td th:text="${cotisation.moisConcerne + ' ' + cotisation.anneeConcerne}">
+                                        Avril 2025
+                                    </td>
+                                    <td th:text="${cotisation.montant + ' FCFA'}">1000 FCFA</td>
+                                    <td th:text="${#temporals.format(cotisation.datePaiement, 'dd/MM/yyyy')}">
+                                        01/04/2025
+                                    </td>
+                                    <td th:text="${cotisation.enregistrePar.prenom + ' ' + cotisation.enregistrePar.nom}">
+                                        Admin Système
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a th:href="@{'/zemidjans/' + ${cotisation.zemidjan.id}}" class="btn btn-outline-primary" title="Voir Zémidjan">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{'/cotisations/zemidjan/' + ${cotisation.zemidjan.id}}" class="btn btn-outline-info" title="Historique">
+                                                <i class="bi bi-clock-history"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    th:data-bs-target="'#deleteModal' + ${cotisation.id}"
+                                                    sec:authorize="hasRole('ROLE_ADMIN')"
+                                                    title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Modal de confirmation de suppression -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${cotisation.id}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirmation de suppression</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Êtes-vous sûr de vouloir supprimer cette cotisation ?</p>
+                                                        <ul>
+                                                            <li><strong>Zémidjan:</strong> <span th:text="${cotisation.zemidjan.prenom + ' ' + cotisation.zemidjan.nom}">Nom</span></li>
+                                                            <li><strong>Période:</strong> <span th:text="${cotisation.moisConcerne + ' ' + cotisation.anneeConcerne}">Période</span></li>
+                                                            <li><strong>Montant:</strong> <span th:text="${cotisation.montant + ' FCFA'}">Montant</span></li>
+                                                        </ul>
+                                                        <p class="text-danger">Cette action est irréversible et pourrait affecter le statut des cotisations du Zémidjan.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                        <form th:action="@{'/cotisations/' + ${cotisation.id} + '/delete'}" method="post">
+                                                            <input type="hidden" name="zemidjanId" th:value="${cotisation.zemidjan.id}">
+                                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(cotisations)}">
+                                    <td colspan="8" class="text-center py-3">Aucune cotisation trouvée</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistiques -->
+            <div class="row mt-4">
+            
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-info-circle"></i> Informations</h5>
+                            <p>
+                                Les cotisations sont fixées à <strong>1000 FCFA</strong> par mois pour chaque Zémidjan.
+                                Ces fonds sont utilisés pour l'entretien des infrastructures et la protection sociale des Zémidjans.
+                            </p>
+                            <p class="mb-0">
+                                Pour générer un rapport détaillé des cotisations par période, cliquez sur le bouton
+                                <a th:href="@{/cotisations/rapport}" class="btn btn-sm btn-info text-white">
+                                    <i class="bi bi-file-earmark-text"></i> Générer un rapport
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

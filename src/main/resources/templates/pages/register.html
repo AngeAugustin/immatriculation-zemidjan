@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h4 class="my-2"><i class="bi bi-person-plus"></i> Inscription</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <form th:action="@{/register}" th:object="${userDTO}" method="post">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="nom" class="form-label">Nom</label>
+                                        <input type="text" class="form-control" id="nom" th:field="*{nom}" 
+                                               placeholder="Votre nom" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prenom" class="form-label">Prénom</label>
+                                        <input type="text" class="form-control" id="prenom" th:field="*{prenom}" 
+                                               placeholder="Votre prénom" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                               placeholder="Votre adresse email" required>
+                                    </div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="commune" class="form-label">Commune</label>
+                                    <select class="form-select" id="commune" th:field="*{commune}" required>
+                                        <option value="" selected disabled>Choisir une commune</option>
+                                        <option value="Cotonou">Cotonou</option>
+                                        <option value="Porto-Novo">Porto-Novo</option>
+                                        <option value="Parakou">Parakou</option>
+                                        <option value="Abomey-Calavi">Abomey-Calavi</option>
+                                        <option value="Bohicon">Bohicon</option>
+                                        <option value="Natitingou">Natitingou</option>
+                                        <option value="Ouidah">Ouidah</option>
+                                        <option value="Lokossa">Lokossa</option>
+                                        <option value="Abomey">Abomey</option>
+                                        <option value="Djougou">Djougou</option>
+                                    </select>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('commune')}" th:errors="*{commune}"></div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">Mot de passe</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                                   placeholder="Votre mot de passe" required>
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" 
+                                                   placeholder="Confirmer le mot de passe" required>
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        J'accepte les <a href="#" class="text-decoration-none">conditions d'utilisation</a>
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-person-plus"></i> S'inscrire
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="card-footer text-center py-3">
+                            <div>Vous avez déjà un compte ? <a th:href="@{/login}" class="text-decoration-none">Se connecter</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

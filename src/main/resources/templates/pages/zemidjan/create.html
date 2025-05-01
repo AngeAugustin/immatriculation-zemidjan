@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-person-plus"></i> Nouveau Zémidjan</h2>
+                <div>
+                    <a th:href="@{/zemidjans}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations du Zémidjan</h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/zemidjans/create}" th:object="${zemidjanDTO}" method="post">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom" th:field="*{nom}" 
+                                               placeholder="Nom de famille" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prenom" th:field="*{prenom}" 
+                                               placeholder="Prénom" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="adresse" class="form-label">Adresse <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="adresse" th:field="*{adresse}" 
+                                           placeholder="Adresse complète" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('adresse')}" th:errors="*{adresse}"></div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                            <input type="tel" class="form-control" id="telephone" th:field="*{telephone}" 
+                                                   placeholder="Ex: 97000000" required>
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="commune" class="form-label">Commune <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="commune" th:field="*{commune}" required>
+                                            <option value="" selected disabled>Choisir une commune</option>
+                                            <option value="Cotonou">Cotonou</option>
+                                            <option value="Porto-Novo">Porto-Novo</option>
+                                            <option value="Parakou">Parakou</option>
+                                            <option value="Abomey-Calavi">Abomey-Calavi</option>
+                                            <option value="Bohicon">Bohicon</option>
+                                            <option value="Natitingou">Natitingou</option>
+                                            <option value="Ouidah">Ouidah</option>
+                                            <option value="Lokossa">Lokossa</option>
+                                            <option value="Abomey">Abomey</option>
+                                            <option value="Djougou">Djougou</option>
+                                        </select>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('commune')}" th:errors="*{commune}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="numeroIdentificationNational" class="form-label">
+                                        Numéro d'Identification National <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="numeroIdentificationNational" 
+                                           th:field="*{numeroIdentificationNational}" 
+                                           placeholder="Numéro d'identification national" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('numeroIdentificationNational')}" 
+                                         th:errors="*{numeroIdentificationNational}"></div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Enregistrer le Zémidjan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Note:</strong> L'enregistrement d'un Zémidjan génère automatiquement un numéro d'immatriculation unique.
+                            </div>
+                            
+                            <p>Le numéro d'immatriculation suit le format:</p>
+                            <div class="bg-light p-2 rounded mb-3">
+                                <code>[CODE_COMMUNE]-[ANNÉE]-[NUMÉRO]-[LETTRE]</code>
+                            </div>
+                            
+                            <p>Exemple: <code>COT-23-12345-A</code> pour un Zémidjan immatriculé à Cotonou en 2023.</p>
+                            
+                            <hr>
+                            
+                            <p class="mb-0">
+                                <span class="text-danger">*</span> Champs obligatoires
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Documents à fournir</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    Pièce d'identité
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    Justificatif de domicile
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    Photos d'identité
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    Attestation de résidence
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

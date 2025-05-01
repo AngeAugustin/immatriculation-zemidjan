@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-pencil-square"></i> Modifier un Zémidjan</h2>
+                <div>
+                    <a th:href="@{'/zemidjans/' + ${zemidjanDTO.id}}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour aux détails
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations du Zémidjan</h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{'/zemidjans/' + ${zemidjanDTO.id} + '/edit'}" th:object="${zemidjanDTO}" method="post">
+                                <input type="hidden" th:field="*{id}">
+                                <input type="hidden" th:field="*{numeroImmatriculation}">
+                                <input type="hidden" th:field="*{dateImmatriculation}">
+                                <input type="hidden" th:field="*{cotisationAJour}">
+                                <input type="hidden" th:field="*{dateDerniereCotisation}">
+                                
+                                <div class="alert alert-info mb-4">
+                                    <div class="d-flex">
+                                        <div class="me-3">
+                                            <i class="bi bi-info-circle-fill fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">
+                                                Vous modifiez les informations du Zémidjan avec le numéro d'immatriculation: 
+                                                <strong th:text="${zemidjanDTO.numeroImmatriculation}">XXX-XX-XXXXX-X</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom" th:field="*{nom}" 
+                                               placeholder="Nom de famille" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prenom" th:field="*{prenom}" 
+                                               placeholder="Prénom" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="adresse" class="form-label">Adresse <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="adresse" th:field="*{adresse}" 
+                                           placeholder="Adresse complète" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('adresse')}" th:errors="*{adresse}"></div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                            <input type="tel" class="form-control" id="telephone" th:field="*{telephone}" 
+                                                   placeholder="Ex: 97000000" required>
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="commune" class="form-label">Commune <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="commune" th:field="*{commune}" required>
+                                            <option value="" disabled>Choisir une commune</option>
+                                            <option value="Cotonou">Cotonou</option>
+                                            <option value="Porto-Novo">Porto-Novo</option>
+                                            <option value="Parakou">Parakou</option>
+                                            <option value="Abomey-Calavi">Abomey-Calavi</option>
+                                            <option value="Bohicon">Bohicon</option>
+                                            <option value="Natitingou">Natitingou</option>
+                                            <option value="Ouidah">Ouidah</option>
+                                            <option value="Lokossa">Lokossa</option>
+                                            <option value="Abomey">Abomey</option>
+                                            <option value="Djougou">Djougou</option>
+                                        </select>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('commune')}" th:errors="*{commune}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="numeroIdentificationNational" class="form-label">
+                                        Numéro d'Identification National <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="numeroIdentificationNational" 
+                                           th:field="*{numeroIdentificationNational}" 
+                                           placeholder="Numéro d'identification national" required>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('numeroIdentificationNational')}" 
+                                         th:errors="*{numeroIdentificationNational}"></div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Enregistrer les modifications
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Informations -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Attention:</strong> Le numéro d'immatriculation ne peut pas être modifié.
+                            </div>
+                            
+                            <p>La modification des informations n'affecte pas:</p>
+                            <ul>
+                                <li>Le numéro d'immatriculation</li>
+                                <li>La date d'immatriculation</li>
+                                <li>Le statut des cotisations</li>
+                            </ul>
+                            
+                            <hr>
+                            
+                            <p class="mb-0">
+                                <span class="text-danger">*</span> Champs obligatoires
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Statut actuel -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Statut actuel</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Numéro d'immatriculation</div>
+                                        <span th:text="${zemidjanDTO.numeroImmatriculation}">XXX-XX-XXXXX-X</span>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Date d'immatriculation</div>
+                                        <span th:text="${#temporals.format(zemidjanDTO.dateImmatriculation, 'dd MMMM yyyy')}">XX/XX/XXXX</span>
+                                    </div>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Statut des cotisations</div>
+                                    </div>
+                                    <span th:if="${zemidjanDTO.cotisationAJour}" class="badge bg-success rounded-pill">À jour</span>
+                                    <span th:unless="${zemidjanDTO.cotisationAJour}" class="badge bg-danger rounded-pill">Non à jour</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">Dernière cotisation</div>
+                                        <span th:text="${#temporals.format(zemidjanDTO.dateDerniereCotisation, 'dd MMMM yyyy')}">XX/XX/XXXX</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

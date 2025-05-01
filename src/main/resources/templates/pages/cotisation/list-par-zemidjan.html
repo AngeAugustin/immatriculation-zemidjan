@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2">
+                    <i class="bi bi-cash-coin"></i> Cotisations de 
+                    <span th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">Nom du Zémidjan</span>
+                </h2>
+                <div>
+                    <a th:href="@{'/zemidjans/' + ${zemidjan.id}}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Retour au Zémidjan
+                    </a>
+                    <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id} + '/create'}" 
+                       class="btn btn-primary"
+                       sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                        <i class="bi bi-plus-circle"></i> Nouvelle cotisation
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Information du Zémidjan -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title" th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">Nom du Zémidjan</h5>
+                            <p class="mb-1">
+                                <strong>Numéro d'immatriculation:</strong> 
+                                <span class="badge bg-primary" th:text="${zemidjan.numeroImmatriculation}">XXX-XX-XXXXX-X</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Commune:</strong> <span th:text="${zemidjan.commune}">Commune</span>
+                            </p>
+                            <p class="mb-0">
+                                <strong>Date d'immatriculation:</strong> 
+                                <span th:text="${#temporals.format(zemidjan.dateImmatriculation, 'dd MMMM yyyy')}">Date</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <p class="mb-1">
+                                <strong>Statut des cotisations:</strong>
+                                <span th:if="${zemidjan.cotisationAJour}" class="badge bg-success">À jour</span>
+                                <span th:unless="${zemidjan.cotisationAJour}" class="badge bg-danger">Non à jour</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Dernière cotisation:</strong>
+                                <span th:text="${#temporals.format(zemidjan.dateDerniereCotisation, 'dd MMMM yyyy')}">Date</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Historique des cotisations -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historique des cotisations</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Période</th>
+                                    <th>Montant</th>
+                                    <th>Date de paiement</th>
+                                    <th>Enregistré par</th>
+                                    <th sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cotisation : ${cotisations}">
+                                    <td th:text="${cotisation.id}">1</td>
+                                    <td th:text="${cotisation.moisConcerne + ' ' + cotisation.anneeConcerne}">
+                                        Avril 2025
+                                    </td>
+                                    <td th:text="${cotisation.montant + ' FCFA'}">1000 FCFA</td>
+                                    <td th:text="${#temporals.format(cotisation.datePaiement, 'dd/MM/yyyy')}">
+                                        01/04/2025
+                                    </td>
+                                    <td th:text="${cotisation.enregistrePar.prenom + ' ' + cotisation.enregistrePar.nom}">
+                                        Admin Système
+                                    </td>
+                                    <td sec:authorize="hasRole('ROLE_ADMIN')">
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                data-bs-toggle="modal" 
+                                                th:data-bs-target="'#deleteModal' + ${cotisation.id}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        
+                                        <!-- Modal de confirmation de suppression -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${cotisation.id}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirmation de suppression</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Êtes-vous sûr de vouloir supprimer cette cotisation ?</p>
+                                                        <ul>
+                                                            <li><strong>Période:</strong> <span th:text="${cotisation.moisConcerne + ' ' + cotisation.anneeConcerne}">Période</span></li>
+                                                            <li><strong>Montant:</strong> <span th:text="${cotisation.montant + ' FCFA'}">Montant</span></li>
+                                                            <li><strong>Date de paiement:</strong> <span th:text="${#temporals.format(cotisation.datePaiement, 'dd/MM/yyyy')}">Date</span></li>
+                                                        </ul>
+                                                        <p class="text-danger">Cette action est irréversible et pourrait affecter le statut des cotisations du Zémidjan.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                        <form th:action="@{'/cotisations/' + ${cotisation.id} + '/delete'}" method="post">
+                                                            <input type="hidden" name="zemidjanId" th:value="${zemidjan.id}">
+                                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(cotisations)}">
+                                    <td colspan="6" class="text-center py-3">Aucune cotisation trouvée pour ce Zémidjan</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Résumé des cotisations -->
+            <!-- Résumé annuel -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Résumé annuel</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Année</th>
+                                    <th>Cotisations payées</th>
+                                    <th>Total</th>
+                                    <th>Couverture</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="entry : ${resumeAnnuel}">
+                                    <td th:text="${entry.key}">2025</td>
+                                    <td th:text="${entry.value.cotisationsPayees}">4 mois</td>
+                                    <td th:text="${entry.value.total}">4 000 FCFA</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                th:style="'width: ' + ${entry.value.couverture} + '%;'" 
+                                                th:attr="aria-valuenow=${entry.value.couverture}"
+                                                aria-valuemin="0" aria-valuemax="100" 
+                                                th:text="${entry.value.couverture + '%'}">
+                                                33%
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statut des cotisations de l'année courante -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Statut des cotisations <span th:text="${anneeActuelle}">2025</span></h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-3 g-3 mb-3">
+                        <!-- Janvier -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Jan == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Jan == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Jan</div>
+                                <i th:class="${statutsCotisations.Jan == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Jan == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Février -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Fév == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Fév == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Fév</div>
+                                <i th:class="${statutsCotisations.Fév == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Fév == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Mars -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Mar == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Mar == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Mar</div>
+                                <i th:class="${statutsCotisations.Mar == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Mar == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Avril -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Avr == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Avr == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Avr</div>
+                                <i th:class="${statutsCotisations.Avr == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Avr == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Mai -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Mai == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Mai == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Mai</div>
+                                <i th:class="${statutsCotisations.Mai == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Mai == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Juin -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Juin == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Juin == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Juin</div>
+                                <i th:class="${statutsCotisations.Juin == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Juin == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Juillet -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Juil == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Juil == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Juil</div>
+                                <i th:class="${statutsCotisations.Juil == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Juil == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Août -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Août == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Août == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Août</div>
+                                <i th:class="${statutsCotisations.Août == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Août == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Septembre -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Sep == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Sep == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Sep</div>
+                                <i th:class="${statutsCotisations.Sep == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Sep == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Octobre -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Oct == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Oct == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Oct</div>
+                                <i th:class="${statutsCotisations.Oct == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Oct == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Novembre -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Nov == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Nov == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Nov</div>
+                                <i th:class="${statutsCotisations.Nov == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Nov == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Décembre -->
+                        <div class="col">
+                            <div th:class="${statutsCotisations.Déc == 'payé' ? 'p-2 border rounded text-center bg-success bg-opacity-10' : 
+                                            statutsCotisations.Déc == 'retard' ? 'p-2 border rounded text-center bg-danger bg-opacity-10' : 
+                                            'p-2 border rounded text-center bg-secondary bg-opacity-10'}">
+                                <div class="mb-2">Déc</div>
+                                <i th:class="${statutsCotisations.Déc == 'payé' ? 'bi bi-check-circle-fill text-success fs-4' : 
+                                            statutsCotisations.Déc == 'retard' ? 'bi bi-x-circle-fill text-danger fs-4' : 
+                                            'bi bi-dash-circle-fill text-secondary fs-4'}"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <span>Payé</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                            <span>Non payé (en retard)</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-dash-circle-fill text-secondary me-2"></i>
+                            <span>À venir</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

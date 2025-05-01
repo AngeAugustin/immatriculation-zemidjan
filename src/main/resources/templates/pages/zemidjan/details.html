@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2">
+                    <i class="bi bi-person-badge"></i> Détails du Zémidjan
+                </h2>
+                <div>
+                    <a th:href="@{/zemidjans}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person"></i> 
+                                    <span th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">Nom complet</span>
+                                </h5>
+                                <span class="badge bg-light text-primary fs-6" th:text="${zemidjan.numeroImmatriculation}">
+                                    XXX-XX-XXXXX-X
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold">Informations personnelles</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Nom:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.nom}">Nom</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Prénom:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.prenom}">Prénom</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Téléphone:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.telephone}">Téléphone</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Adresse:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.adresse}">Adresse</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Commune:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.commune}">Commune</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold">Informations d'immatriculation</h6>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Numéro d'immatriculation:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.numeroImmatriculation}">XXX-XX-XXXXX-X</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Date d'immatriculation:</span>
+                                            <span class="fw-bold" th:text="${#temporals.format(zemidjan.dateImmatriculation, 'dd MMMM yyyy')}">
+                                                Date
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Numéro d'identification:</span>
+                                            <span class="fw-bold" th:text="${zemidjan.numeroIdentificationNational}">
+                                                Numéro
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Statut des cotisations:</span>
+                                            <span th:if="${zemidjan.cotisationAJour}" class="badge bg-success">À jour</span>
+                                            <span th:unless="${zemidjan.cotisationAJour}" class="badge bg-danger">Non à jour</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span>Dernière cotisation:</span>
+                                            <span class="fw-bold" th:text="${#temporals.format(zemidjan.dateDerniereCotisation, 'dd MMMM yyyy')}">
+                                                Date
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2 mt-3" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                                <a th:href="@{'/zemidjans/' + ${zemidjan.id} + '/edit'}" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil"></i> Modifier
+                                </a>
+                                <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id} + '/create'}" class="btn btn-outline-success">
+                                    <i class="bi bi-plus-circle"></i> Enregistrer cotisation
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#deleteModal"
+                                        sec:authorize="hasRole('ROLE_ADMIN')">
+                                    <i class="bi bi-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QR Code pour vérification -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="bi bi-qr-code"></i> Code QR d'authentification</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=zemidjan:" th:attr="src=${'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=zemidjan:' + zemidjan.numeroImmatriculation}" alt="QR Code" class="img-fluid border p-2">
+                            </div>
+                            <p class="mb-0">
+                                Ce QR code peut être scanné pour vérifier l'authenticité du numéro d'immatriculation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- Historique des cotisations -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Cotisations</h5>
+                            <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id}}" class="btn btn-sm btn-outline-primary">
+                                Voir toutes
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush" id="cotisationsRecentes">
+                                <!-- Exemple de cotisations récentes - à remplacer par des données réelles -->
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Mai 2025</h6>
+                                        <small class="text-body-secondary">12/02/2025</small>
+                                    </div>
+                                    <p class="mb-1">1 000 FCFA</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light text-center">
+                            <small>Dernières cotisations enregistrées</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte de statut -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="bi bi-card-checklist"></i> Statut</h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${zemidjan.cotisationAJour}" class="alert alert-success mb-0">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <strong>À jour de ses cotisations</strong>
+                                <p class="mb-0 mt-2">
+                                    Ce Zémidjan est en règle et peut exercer son activité.
+                                </p>
+                            </div>
+                            <div th:unless="${zemidjan.cotisationAJour}" class="alert alert-danger mb-0">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Cotisations non à jour</strong>
+                                <p class="mb-0 mt-2">
+                                    Ce Zémidjan doit régulariser sa situation pour continuer son activité.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="bi bi-gear"></i> Actions</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id}}" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-list-check me-2"></i> Historique des cotisations
+                                </a>
+                                <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id} + '/create'}" 
+                                   class="list-group-item list-group-item-action"
+                                   sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                                    <i class="bi bi-plus-circle me-2"></i> Nouvelle cotisation
+                                </a>
+                                <a href="#" onclick="window.print()" class="list-group-item list-group-item-action">
+                                    <i class="bi bi-printer me-2"></i> Imprimer la fiche
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action" 
+                                   data-bs-toggle="modal" 
+                                   data-bs-target="#cardModal">
+                                    <i class="bi bi-card-text me-2"></i> Voir la carte professionnelle
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal de confirmation de suppression -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Confirmation de suppression</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Êtes-vous sûr de vouloir supprimer le Zémidjan <strong th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">Nom</strong> ?</p>
+                            <p class="text-danger">Cette action est irréversible.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <form th:action="@{'/zemidjans/' + ${zemidjan.id} + '/delete'}" method="post">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal pour la carte professionnelle -->
+            <div class="modal fade" id="cardModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Carte professionnelle Zémidjan</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white text-center">
+                                    <h5 class="mb-0">République du Bénin</h5>
+                                    <p class="mb-0">Carte Professionnelle de Zémidjan</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="border border-secondary rounded p-2 text-center mb-2">
+                                                <i class="bi bi-person-circle display-1"></i>
+                                            </div>
+                                            <div class="text-center mb-3">
+                                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=zemidjan:" th:attr="src=${'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=zemidjan:' + zemidjan.numeroImmatriculation}" alt="QR Code" class="img-fluid border">
+                                            </div>
+                                        </div>
+                                        <div class="col-8">
+                                            <h6 class="mb-2" th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">Nom complet</h6>
+                                            <p class="mb-1"><strong>N° Immat.:</strong> <span th:text="${zemidjan.numeroImmatriculation}">XXX-XX-XXXXX-X</span></p>
+                                            <p class="mb-1"><strong>Commune:</strong> <span th:text="${zemidjan.commune}">Commune</span></p>
+                                            <p class="mb-1"><strong>Date d'immat.:</strong> <span th:text="${#temporals.format(zemidjan.dateImmatriculation, 'dd/MM/yyyy')}">XX/XX/XXXX</span></p>
+                                            <p class="mb-1"><strong>ID National:</strong> <span th:text="${zemidjan.numeroIdentificationNational}">XXXXXXXX</span></p>
+                                            <p class="mb-0 mt-2">
+                                                <span th:if="${zemidjan.cotisationAJour}" class="badge bg-success">À jour</span>
+                                                <span th:unless="${zemidjan.cotisationAJour}" class="badge bg-danger">Non à jour</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <small>Carte valable sous réserve de paiement des cotisations mensuelles</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <button type="button" class="btn btn-primary" onclick="window.print()">
+                                <i class="bi bi-printer"></i> Imprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

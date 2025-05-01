@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-people-fill"></i> Gestion des utilisateurs</h2>
+                <div>
+                    <a th:href="@{/admin/users/create}" class="btn btn-primary">
+                        <i class="bi bi-person-plus-fill"></i> Nouvel utilisateur
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Filtres de recherche -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchUser" placeholder="Rechercher un utilisateur...">
+                                <button class="btn btn-outline-primary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="communeFilter">
+                                <option value="">Toutes les communes</option>
+                                <option value="Cotonou">Cotonou</option>
+                                <option value="Porto-Novo">Porto-Novo</option>
+                                <option value="Parakou">Parakou</option>
+                                <option value="Abomey-Calavi">Abomey-Calavi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="roleFilter">
+                                <option value="">Tous les rôles</option>
+                                <option value="ROLE_ADMIN">Administrateur</option>
+                                <option value="ROLE_MODERATEUR">Modérateur</option>
+                                <option value="ROLE_USER">Utilisateur</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Liste des utilisateurs -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Email</th>
+                                    <th>Commune</th>
+                                    <th>Rôles</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td th:text="${user.id}">1</td>
+                                    <td th:text="${user.nom}">Nom</td>
+                                    <td th:text="${user.prenom}">Prénom</td>
+                                    <td th:text="${user.email}">email@example.com</td>
+                                    <td th:text="${user.commune}">Commune</td>
+                                    <td>
+                                        <th:block th:each="role, stat : ${user.roles}">
+                                            <span th:if="${role.name == T(com.zemidjan.model.ERole).ROLE_ADMIN}" 
+                                                  class="badge bg-danger">Admin</span>
+                                            <span th:if="${role.name == T(com.zemidjan.model.ERole).ROLE_MODERATEUR}" 
+                                                  class="badge bg-warning text-dark">Modérateur</span>
+                                            <span th:if="${role.name == T(com.zemidjan.model.ERole).ROLE_USER}" 
+                                                  class="badge bg-info text-white">Utilisateur</span>
+                                            <th:block th:if="${!stat.last}">&nbsp;</th:block>
+                                        </th:block>
+                                    </td>
+                                    <td>
+                                        <span th:if="${user.active}" class="badge bg-success">Actif</span>
+                                        <span th:unless="${user.active}" class="badge bg-danger">Inactif</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a th:href="@{'/admin/users/' + ${user.id} + '/edit'}" class="btn btn-outline-primary" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" 
+                                                    data-bs-toggle="dropdown" aria-expanded="false" title="Gérer les rôles">
+                                                <i class="bi bi-person-gear"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li class="dropdown-header">Ajouter un rôle</li>
+                                                <li>
+                                                    <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-role'}" method="post">
+                                                        <input type="hidden" name="role" value="ROLE_ADMIN">
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="bi bi-shield-fill"></i> Administrateur
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-role'}" method="post">
+                                                        <input type="hidden" name="role" value="ROLE_MODERATEUR">
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="bi bi-person-fill-gear"></i> Modérateur
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form th:action="@{'/admin/users/' + ${user.id} + '/toggle-role'}" method="post">
+                                                        <input type="hidden" name="role" value="ROLE_USER">
+                                                        <button type="submit" class="dropdown-item">
+                                                            <i class="bi bi-person"></i> Utilisateur
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                            
+                                            <th:block th:if="${user.active}">
+                                                <form th:action="@{'/admin/users/' + ${user.id} + '/deactivate'}" method="post">
+                                                    <button type="submit" class="btn btn-outline-warning" title="Désactiver">
+                                                        <i class="bi bi-person-slash"></i>
+                                                    </button>
+                                                </form>
+                                            </th:block>
+                                            <th:block th:unless="${user.active}">
+                                                <form th:action="@{'/admin/users/' + ${user.id} + '/activate'}" method="post">
+                                                    <button type="submit" class="btn btn-outline-success" title="Activer">
+                                                        <i class="bi bi-person-check"></i>
+                                                    </button>
+                                                </form>
+                                            </th:block>
+                                            
+                                            <button type="button" class="btn btn-outline-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    th:data-bs-target="'#deleteModal' + ${user.id}"
+                                                    title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Modal de confirmation de suppression -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${user.id}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirmation de suppression</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong th:text="${user.prenom + ' ' + user.nom}">Nom</strong> ?</p>
+                                                        <p class="text-danger">Cette action est irréversible.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                        <form th:action="@{'/admin/users/' + ${user.id} + '/delete'}" method="post">
+                                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(users)}">
+                                    <td colspan="8" class="text-center py-3">Aucun utilisateur trouvé</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Information -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-info-circle"></i> Informations sur les rôles</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <span class="badge bg-danger">Administrateur</span>
+                                <p class="small mt-1 mb-0">
+                                    Accès complet à toutes les fonctionnalités du système, y compris la gestion des utilisateurs, 
+                                    la suppression d'enregistrements et la génération de rapports.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <span class="badge bg-warning text-dark">Modérateur</span>
+                                <p class="small mt-1 mb-0">
+                                    Peut gérer les Zémidjans et les cotisations dans sa commune. Peut créer et modifier 
+                                    des enregistrements, mais ne peut pas les supprimer.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <span class="badge bg-info text-white">Utilisateur</span>
+                                <p class="small mt-1 mb-0">
+                                    Accès en lecture seule aux Zémidjans et aux cotisations dans sa commune. 
+                                    Ne peut pas créer, modifier ou supprimer des enregistrements.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

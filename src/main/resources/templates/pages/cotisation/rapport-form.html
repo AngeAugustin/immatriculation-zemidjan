@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-file-earmark-text"></i> Générer un rapport de cotisations</h2>
+                <div>
+                    <a th:href="@{/cotisations}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour aux cotisations
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Paramètres du rapport</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="bi bi-info-circle-fill fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="alert-heading">Rapport de cotisations</h5>
+                                        <p class="mb-0">
+                                            Sélectionnez une période pour générer un rapport détaillé des cotisations.
+                                            Le rapport affichera toutes les cotisations enregistrées durant cette période.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <form th:action="@{/cotisations/rapport/generer}" method="get">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="dateDebut" class="form-label">Date de début <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="dateDebut" name="dateDebut" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="dateFin" class="form-label">Date de fin <span class="text-danger">*</span></label>
+                                        <input type="date" class="form-control" id="dateFin" name="dateFin" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Options de filtrage</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="true" id="parCommune" name="parCommune">
+                                        <label class="form-check-label" for="parCommune">
+                                            Regrouper par commune
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="true" id="parMois" name="parMois">
+                                        <label class="form-check-label" for="parMois">
+                                            Regrouper par mois
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="formatRapport" class="form-label">Format du rapport</label>
+                                    <select class="form-select" id="formatRapport" name="format">
+                                        <option value="html" selected>Afficher à l'écran (HTML)</option>
+                                        <option value="pdf" disabled>Exporter en PDF (bientôt disponible)</option>
+                                        <option value="excel" disabled>Exporter en Excel (bientôt disponible)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-file-earmark-bar-graph"></i> Générer le rapport
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Types de rapports</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                <a href="#" class="list-group-item list-group-item-action active">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Rapport par période</h6>
+                                        <small><i class="bi bi-calendar-range"></i></small>
+                                    </div>
+                                    <p class="mb-1">Rapport des cotisations pour une période spécifique</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action disabled">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Rapport par commune</h6>
+                                        <small><i class="bi bi-geo-alt"></i></small>
+                                    </div>
+                                    <p class="mb-1">Statistiques par commune (bientôt disponible)</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action disabled">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Rapport des retards</h6>
+                                        <small><i class="bi bi-exclamation-triangle"></i></small>
+                                    </div>
+                                    <p class="mb-1">Liste des Zémidjans en retard de paiement (bientôt disponible)</p>
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action disabled">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Rapport annuel</h6>
+                                        <small><i class="bi bi-bar-chart"></i></small>
+                                    </div>
+                                    <p class="mb-1">Résumé annuel des cotisations (bientôt disponible)</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+
+    <!-- Script pour définir les dates par défaut -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Définir la date de début au premier jour du mois en cours
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('dateDebut').valueAsDate = firstDay;
+            document.getElementById('dateFin').valueAsDate = lastDay;
+        });
+    </script>
+</body>
+</html>

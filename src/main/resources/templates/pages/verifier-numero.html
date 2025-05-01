@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="row mb-4">
+                <div class="col">
+                    <h2 class="border-bottom pb-2"><i class="bi bi-search"></i> Vérification d'un numéro d'immatriculation</h2>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Entrez un numéro d'immatriculation</h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/verifier-numero}" method="post">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="bi bi-123"></i></span>
+                                    <input type="text" class="form-control" id="numero" name="numero" 
+                                           placeholder="Ex: COT-23-12345-A" required th:value="${numero}">
+                                    <button class="btn btn-primary" type="submit">Vérifier</button>
+                                </div>
+                                <div class="form-text">
+                                    Entrez le numéro d'immatriculation complet tel qu'il apparaît sur la tenue du Zémidjan.
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Résultat de la vérification -->
+                    <div th:if="${estAuthentique != null}">
+                        <div th:if="${estAuthentique}" class="card border-success mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="bi bi-check-circle-fill"></i> Numéro authentique</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <h4 th:text="${zemidjan.prenom + ' ' + zemidjan.nom}" class="text-success">Nom du Zémidjan</h4>
+                                        <p class="mb-1">
+                                            <strong>Numéro d'immatriculation:</strong> 
+                                            <span th:text="${zemidjan.numeroImmatriculation}" class="badge bg-primary">XXX-XX-XXXXX-X</span>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Commune:</strong> <span th:text="${zemidjan.commune}">Commune</span>
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Date d'immatriculation:</strong> 
+                                            <span th:text="${#temporals.format(zemidjan.dateImmatriculation, 'dd MMMM yyyy')}">XX-XX-XXXX</span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <strong>Statut des cotisations:</strong> 
+                                            <span th:if="${zemidjan.cotisationAJour}" class="badge bg-success">À jour</span>
+                                            <span th:unless="${zemidjan.cotisationAJour}" class="badge bg-danger">Non à jour</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Ce numéro d'immatriculation est enregistré officiellement et appartient au Zémidjan mentionné ci-dessus.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div th:unless="${estAuthentique}" class="card border-danger mb-4">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="mb-0"><i class="bi bi-x-circle-fill"></i> Numéro non authentique</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-3">
+                                    Le numéro d'immatriculation <strong th:text="${numero}">XXX-XX-XXXXX-X</strong> n'est pas reconnu dans notre système.
+                                </p>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <strong>Attention:</strong> Ce numéro pourrait être falsifié ou contenir une erreur de saisie.
+                                    Veuillez vérifier que vous avez correctement saisi le numéro et réessayez.
+                                </div>
+                                
+                                <p>
+                                    Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administration 
+                                    ou signaler ce numéro aux autorités compétentes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Information sur le format des numéros -->
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <h5 class="mb-0">Format des numéros d'immatriculation</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Les numéros d'immatriculation des Zémidjans suivent le format suivant:</p>
+                            <div class="bg-white p-3 rounded mb-3">
+                                <code>XXX-YY-NNNNN-L</code>
+                            </div>
+                            <ul>
+                                <li><strong>XXX</strong>: Code de la commune (3 lettres)</li>
+                                <li><strong>YY</strong>: Année d'immatriculation (2 chiffres)</li>
+                                <li><strong>NNNNN</strong>: Numéro séquentiel (5 chiffres)</li>
+                                <li><strong>L</strong>: Lettre de contrôle (1 lettre)</li>
+                            </ul>
+                            <p class="mb-0">
+                                Exemple: <code>COT-23-12345-A</code> pour un Zémidjan immatriculé à Cotonou en 2023.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

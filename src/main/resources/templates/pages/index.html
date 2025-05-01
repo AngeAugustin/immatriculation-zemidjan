@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <!-- Hero section -->
+            <div class="px-4 py-5 my-5 text-center">
+                <h1 class="display-4 fw-bold text-primary">Immatriculation des Zémidjans</h1>
+                <div class="col-lg-8 mx-auto">
+                    <p class="lead mb-4">
+                        Application de gestion de la numérotation écrite sur les tenues des zémidjans.
+                        Assurez-vous de l'unicité des numéros et contrôlez les cotisations mensuelles.
+                    </p>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a th:href="@{/verifier-numero}" class="btn btn-primary btn-lg px-4 gap-3">
+                            <i class="bi bi-search"></i> Vérifier un numéro
+                        </a>
+                        <a th:href="@{/register}" class="btn btn-outline-secondary btn-lg px-4" sec:authorize="!isAuthenticated()">
+                            <i class="bi bi-person-plus"></i> S'inscrire
+                        </a>
+                        <a th:href="@{/dashboard}" class="btn btn-outline-secondary btn-lg px-4" sec:authorize="isAuthenticated()">
+                            <i class="bi bi-speedometer2"></i> Tableau de bord
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features section -->
+            <div class="container px-4 py-5" id="features">
+                <h2 class="pb-2 border-bottom">Fonctionnalités principales</h2>
+                <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                    <div class="col d-flex align-items-start">
+                        <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3 p-3 rounded">
+                            <i class="bi bi-123 text-primary fs-2"></i>
+                        </div>
+                        <div>
+                            <h3 class="fs-4">Numérotation unique</h3>
+                            <p>Gestion de l'unicité des numéros attribués aux zémidjans lors de l'immatriculation.</p>
+                        </div>
+                    </div>
+                    <div class="col d-flex align-items-start">
+                        <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3 p-3 rounded">
+                            <i class="bi bi-cash-coin text-primary fs-2"></i>
+                        </div>
+                        <div>
+                            <h3 class="fs-4">Suivi des cotisations</h3>
+                            <p>Contrôle des cotisations mensuelles de 1000 FCFA par mois pour chaque zémidjan.</p>
+                        </div>
+                    </div>
+                    <div class="col d-flex align-items-start">
+                        <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3 p-3 rounded">
+                            <i class="bi bi-shield-check text-primary fs-2"></i>
+                        </div>
+                        <div>
+                            <h3 class="fs-4">Vérification d'authenticité</h3>
+                            <p>Permet de vérifier facilement l'authenticité d'un numéro d'immatriculation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ section -->
+            <div class="container mb-5">
+                <h2 class="pb-2 border-bottom">Foire aux questions</h2>
+                <div class="accordion mt-4" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Qu'est-ce qu'un Zémidjan ?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Un Zémidjan est un conducteur de taxi-moto au Bénin. Le terme vient de l'expression en langue fon "Zemĕ djan" qui signifie "emmène-moi rapidement". Les Zémidjans sont reconnaissables à leurs tenues jaunes numérotées.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Comment se fait l'immatriculation ?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                L'immatriculation se fait auprès des autorités compétentes de chaque commune. Les numéros sont uniques et suivent un format spécifique incluant le code de la commune, l'année et un numéro séquentiel. Cette application permet de gérer ce processus.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Pourquoi payer une cotisation mensuelle ?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                La cotisation mensuelle de 1000 FCFA permet de financer les infrastructures liées à l'activité des Zémidjans, d'assurer leur protection sociale et de garantir la légalité de leur activité.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-plus-circle"></i> Nouvelle cotisation</h2>
+                <div>
+                    <a th:href="@{'/zemidjans/' + ${zemidjan.id}}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour au Zémidjan
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Enregistrer une cotisation</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Informations du Zémidjan -->
+                            <div class="alert alert-info mb-4">
+                                <div class="d-flex">
+                                    <div class="me-3">
+                                        <i class="bi bi-person-circle fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="alert-heading" th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">
+                                            Nom du Zémidjan
+                                        </h5>
+                                        <p class="mb-1">
+                                            <strong>Numéro:</strong> 
+                                            <span class="badge bg-primary" th:text="${zemidjan.numeroImmatriculation}">
+                                                XXX-XX-XXXXX-X
+                                            </span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <strong>Commune:</strong> <span th:text="${zemidjan.commune}">Commune</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Formulaire d'enregistrement de cotisation -->
+                            <form th:action="@{'/cotisations/zemidjan/' + ${zemidjanId} + '/create'}" th:object="${cotisationDTO}" method="post">
+                                <input type="hidden" th:field="*{zemidjanId}">
+                                <input type="hidden" th:field="*{numeroImmatriculation}">
+                                <input type="hidden" th:field="*{nomCompletZemidjan}">
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="moisConcerne" class="form-label">Mois concerné <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="moisConcerne" th:field="*{moisConcerne}" required>
+                                            <option value="" selected disabled>Choisir un mois</option>
+                                            <option value="Janvier">Janvier</option>
+                                            <option value="Février">Février</option>
+                                            <option value="Mars">Mars</option>
+                                            <option value="Avril">Avril</option>
+                                            <option value="Mai">Mai</option>
+                                            <option value="Juin">Juin</option>
+                                            <option value="Juillet">Juillet</option>
+                                            <option value="Août">Août</option>
+                                            <option value="Septembre">Septembre</option>
+                                            <option value="Octobre">Octobre</option>
+                                            <option value="Novembre">Novembre</option>
+                                            <option value="Décembre">Décembre</option>
+                                        </select>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('moisConcerne')}" th:errors="*{moisConcerne}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="anneeConcerne" class="form-label">Année concernée <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="anneeConcerne" th:field="*{anneeConcerne}" required>
+                                            <option value="" selected disabled>Choisir une année</option>
+                                            <option value="2025">2025</option>
+                                            <option value="2024">2024</option>
+                                            <option value="2023">2023</option>
+                                        </select>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('anneeConcerne')}" th:errors="*{anneeConcerne}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="montant" class="form-label">Montant <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="montant" th:field="*{montant}" 
+                                               min="1000" step="1000" required>
+                                        <span class="input-group-text">FCFA</span>
+                                    </div>
+                                    <div class="form-text">Montant standard: 1000 FCFA</div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('montant')}" th:errors="*{montant}"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="datePaiement" class="form-label">Date de paiement</label>
+                                    <input type="date" class="form-control" id="datePaiement" th:field="*{datePaiement}">
+                                    <div class="form-text">Si non spécifiée, la date du jour sera utilisée.</div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Enregistrer la cotisation
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <!-- État des cotisations -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">État des cotisations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div th:if="${zemidjan.cotisationAJour}" class="alert alert-success mb-3">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <strong>À jour</strong> de ses cotisations
+                            </div>
+                            <div th:unless="${zemidjan.cotisationAJour}" class="alert alert-danger mb-3">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Non à jour</strong> de ses cotisations
+                            </div>
+                            
+                            <p>Dernière cotisation: <strong th:text="${#temporals.format(zemidjan.dateDerniereCotisation, 'dd MMMM yyyy')}">01/01/2025</strong></p>
+                            
+                            <hr>
+                            
+                            <p class="mb-0">
+                                <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id}}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-clock-history"></i> Voir l'historique des cotisations
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Information -->
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>
+                                <strong>Important:</strong> Une seule cotisation peut être enregistrée par mois.
+                            </div>
+                            
+                            <p>
+                                L'enregistrement d'une cotisation met automatiquement à jour le statut
+                                du Zémidjan et la date de sa dernière cotisation.
+                            </p>
+                            
+                            <hr>
+                            
+                            <p class="mb-0">
+                                <span class="text-danger">*</span> Champs obligatoires
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="row mb-4">
+                <div class="col">
+                    <h2 class="border-bottom pb-2"><i class="bi bi-speedometer2"></i> Tableau de bord</h2>
+                </div>
+            </div>
+            
+            <!-- Message d'erreur si nécessaire -->
+            <div th:if="${errorMessage}" class="alert alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}">Message d'erreur</span>
+            </div>
+            
+            <!-- Cards statistiques avec données réelles -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-4">
+                    <div class="card text-bg-primary h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title text-white-50">Total des Zémidjans</h6>
+                                    <h2 class="mb-0" th:text="${totalZemidjans}">0</h2>
+                                </div>
+                                <div class="fs-1 text-white-50">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-primary bg-opacity-75 text-white border-0">
+                            <a th:href="@{/zemidjans}" class="text-white text-decoration-none">
+                                <small>Voir tous <i class="bi bi-chevron-right"></i></small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card text-bg-success h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title text-white-50">À jour de cotisations</h6>
+                                    <h2 class="mb-0" th:text="${zemidjanAJour}">0</h2>
+                                </div>
+                                <div class="fs-1 text-white-50">
+                                    <i class="bi bi-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-success bg-opacity-75 text-white border-0">
+                            <small>Taux: <span th:text="${tauxRecouvrement + '%'}">0%</span></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card text-bg-danger h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title text-white-50">Retards de paiement</h6>
+                                    <h2 class="mb-0" th:text="${zemidjanNonAJour}">0</h2>
+                                </div>
+                                <div class="fs-1 text-white-50">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-danger bg-opacity-75 text-white border-0">
+                            <a th:href="@{/zemidjans/non-a-jour}" class="text-white text-decoration-none">
+                                <small>Voir tous <i class="bi bi-chevron-right"></i></small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card text-bg-info h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title text-white-50">Montant collecté (mois)</h6>
+                                    <h2 class="mb-0" th:text="${montantMensuel + ' FCFA'}">0 FCFA</h2>
+                                </div>
+                                <div class="fs-1 text-white-50">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-info bg-opacity-75 text-white border-0">
+                            <a th:href="@{/cotisations}" class="text-white text-decoration-none">
+                                <small>Détails <i class="bi bi-chevron-right"></i></small>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Row d'actions rapides -->
+            <div class="row mb-4">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> Actions rapides</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3 text-center" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                                    <a th:href="@{/zemidjans/create}" class="text-decoration-none">
+                                        <div class="p-3 rounded-3 bg-primary bg-opacity-10 mb-2">
+                                            <i class="bi bi-person-plus fs-2 text-primary"></i>
+                                        </div>
+                                        <span>Nouveau Zémidjan</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3 text-center">
+                                    <a th:href="@{/zemidjans}" class="text-decoration-none">
+                                        <div class="p-3 rounded-3 bg-success bg-opacity-10 mb-2">
+                                            <i class="bi bi-list-ul fs-2 text-success"></i>
+                                        </div>
+                                        <span>Liste des Zémidjans</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3 text-center" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                                    <a th:href="@{/cotisations}" class="text-decoration-none">
+                                        <div class="p-3 rounded-3 bg-info bg-opacity-10 mb-2">
+                                            <i class="bi bi-cash-coin fs-2 text-info"></i>
+                                        </div>
+                                        <span>Gérer les cotisations</span>
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3 text-center">
+                                    <a th:href="@{/verifier-numero}" class="text-decoration-none">
+                                        <div class="p-3 rounded-3 bg-warning bg-opacity-10 mb-2">
+                                            <i class="bi bi-search fs-2 text-warning"></i>
+                                        </div>
+                                        <span>Vérifier un numéro</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Information sur l'état du système -->
+            <div class="row mt-4" th:if="${totalZemidjans == 0}">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <span>Aucun Zémidjan n'est encore enregistré dans le système. Commencez par créer des Zémidjans pour voir les statistiques.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Information sur la période de grâce -->
+            <div class="row mt-4" th:if="${#temporals.day(#temporals.createNow()) <= 10 && totalZemidjans > 0}">
+                <div class="col-12">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-clock-history me-2"></i>
+                        <strong>Période de grâce active:</strong> Les Zémidjans bénéficient d'une période de grâce jusqu'au 10 du mois pour effectuer leur paiement mensuel. Pendant cette période, ils conservent leur statut "à jour" si la cotisation du mois précédent a été payée.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information sur les nouveaux Zémidjans et la période de grâce -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Information:</strong> Les nouveaux Zémidjans sont automatiquement à jour de cotisation le mois de leur immatriculation.
+                        Ils commencent à payer à partir du 10 du mois suivant. 
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

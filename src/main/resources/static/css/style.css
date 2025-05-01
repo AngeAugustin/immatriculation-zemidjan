@@ -1,0 +1,179 @@
+/* Style principal pour l'application Zémidjan Immatriculation */
+
+/* Police personnalisée */
+body {
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f5f8fa;
+}
+
+/* Couleurs personnalisées pour les éléments de navigation */
+.navbar-dark.bg-primary {
+    background-color: #0891b2 !important; /* Cyan-700 */
+}
+
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Customisation des cartes */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: none;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.card-header.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.card-header.bg-primary {
+    background-color: #0891b2 !important;
+}
+
+/* Customisation des boutons */
+.btn {
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #0891b2;
+    border-color: #0891b2;
+}
+
+.btn-primary:hover {
+    background-color: #0e7490;
+    border-color: #0e7490;
+}
+
+.btn-outline-primary {
+    color: #0891b2;
+    border-color: #0891b2;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0891b2;
+    border-color: #0891b2;
+}
+
+/* Customisation des badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    border-radius: 0.375rem;
+}
+
+/* Customisation des tableaux */
+.table {
+    color: #333;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Customisation des formulaires */
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0891b2;
+    box-shadow: 0 0 0 0.25rem rgba(8, 145, 178, 0.25);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #0891b2;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0891b2;
+    border-color: #0891b2;
+}
+
+/* Footer */
+.footer {
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Boutons de groupe */
+.btn-group .btn {
+    padding: 0.375rem 0.75rem;
+}
+
+/* Statut des cotisations */
+.badge.bg-success {
+    background-color: #059669 !important; /* Emerald-600 */
+}
+
+.badge.bg-danger {
+    background-color: #e11d48 !important; /* Rose-600 */
+}
+
+/* Alertes */
+.alert-success {
+    background-color: rgba(5, 150, 105, 0.1);
+    border-color: rgba(5, 150, 105, 0.2);
+    color: #059669;
+}
+
+.alert-danger {
+    background-color: rgba(225, 29, 72, 0.1);
+    border-color: rgba(225, 29, 72, 0.2);
+    color: #e11d48;
+}
+
+.alert-info {
+    background-color: rgba(8, 145, 178, 0.1);
+    border-color: rgba(8, 145, 178, 0.2);
+    color: #0891b2;
+}
+
+.alert-warning {
+    background-color: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.2);
+    color: #d97706;
+}
+
+/* Styles pour l'impression */
+@media print {
+    body {
+        background-color: #fff;
+    }
+    
+    .container {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .card {
+        break-inside: avoid;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}

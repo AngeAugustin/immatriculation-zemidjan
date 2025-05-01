@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:fragment="head">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title th:text="${title != null ? title + ' - ' : ''} + 'Immatriculation des Zémidjans'">Immatriculation des Zémidjans</title>
+        
+        <!-- Bootstrap CSS -->
+        <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.2/css/bootstrap.min.css}">
+        
+        <!-- Custom CSS -->
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+        
+        <!-- Font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;500;600;700&display=swap" rel="stylesheet">
+        
+        <!-- Bootstrap Icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    </th:block>
+</head>
+<body>
+    <header th:fragment="nav">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" th:href="@{/}">
+                    <i class="bi bi-scooter"></i> Zémidjan Immatriculation
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/}"><i class="bi bi-house-door"></i> Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/verifier-numero}"><i class="bi bi-search"></i> Vérifier Numéro</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/dashboard}"><i class="bi bi-speedometer2"></i> Tableau de bord</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR', 'ROLE_USER')">
+                            <a class="nav-link" th:href="@{/zemidjans}"><i class="bi bi-people"></i> Zémidjans</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                            <a class="nav-link" th:href="@{/zemidjans/create}"><i class="bi bi-person-plus"></i> Nouveau Zémidjan</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                            <a class="nav-link" th:href="@{/cotisations}"><i class="bi bi-cash-coin"></i> Cotisations</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <a class="nav-link" th:href="@{/admin/users}"><i class="bi bi-person-gear"></i> Utilisateurs</a>
+                        </li>
+                    </ul>
+                    
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item" sec:authorize="!isAuthenticated()">
+                            <a class="nav-link" th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> Connexion</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="!isAuthenticated()">
+                            <a class="nav-link" th:href="@{/register}"><i class="bi bi-person-plus"></i> Inscription</a>
+                        </li>
+                        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> 
+                                <span sec:authentication="principal.fullName">Utilisateur</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" th:href="@{/profile}"><i class="bi bi-person"></i> Mon profil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form th:action="@{/logout}" method="post" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-box-arrow-right"></i> Déconnexion
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+</body>
+</html>

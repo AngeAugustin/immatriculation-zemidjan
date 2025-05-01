@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <footer th:fragment="footer" class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <span class="text-muted">&copy; 2025 Immatriculation des Zémidjans. Tous droits réservés.</span>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="#" class="text-decoration-none me-3">Mentions légales</a>
+                    <a href="#" class="text-decoration-none">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <th:block th:fragment="scripts">
+        <!-- Bootstrap JS Bundle with Popper -->
+        <script th:src="@{/webjars/bootstrap/5.3.2/js/bootstrap.bundle.min.js}"></script>
+        
+        <!-- jQuery -->
+        <script th:src="@{/webjars/jquery/3.7.1/jquery.min.js}"></script>
+        
+        <!-- Custom JavaScript -->
+        <script th:src="@{/js/script.js}"></script>
+    </th:block>
+</body>
+</html>

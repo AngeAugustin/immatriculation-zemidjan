@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-pencil-square"></i> Modifier un utilisateur</h2>
+                <div>
+                    <a th:href="@{/admin/users}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations de l'utilisateur</h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{'/admin/users/' + ${userId} + '/edit'}" th:object="${userDTO}" method="post" class="needs-validation" novalidate>
+                                <input type="hidden" th:field="*{id}">
+                                
+                                <div class="alert alert-info mb-4">
+                                    <div class="d-flex">
+                                        <div class="me-3">
+                                            <i class="bi bi-info-circle-fill fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0">
+                                                Vous modifiez l'utilisateur avec l'email: 
+                                                <strong th:text="${userDTO.email}">utilisateur@example.com</strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom" th:field="*{nom}" 
+                                               placeholder="Nom de famille" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prenom" th:field="*{prenom}" 
+                                               placeholder="Prénom" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                               placeholder="Adresse email" required>
+                                    </div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="commune" class="form-label">Commune <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="commune" th:field="*{commune}" required>
+                                        <option value="" disabled>Choisir une commune</option>
+                                        <option value="Cotonou">Cotonou</option>
+                                        <option value="Porto-Novo">Porto-Novo</option>
+                                        <option value="Parakou">Parakou</option>
+                                        <option value="Abomey-Calavi">Abomey-Calavi</option>
+                                        <option value="Bohicon">Bohicon</option>
+                                        <option value="Natitingou">Natitingou</option>
+                                        <option value="Ouidah">Ouidah</option>
+                                        <option value="Lokossa">Lokossa</option>
+                                        <option value="Abomey">Abomey</option>
+                                        <option value="Djougou">Djougou</option>
+                                    </select>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('commune')}" th:errors="*{commune}"></div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">Nouveau mot de passe</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                                   placeholder="Laisser vide pour ne pas changer">
+                                        </div>
+                                        <div class="form-text">Laissez vide pour conserver le mot de passe actuel</div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" 
+                                                   placeholder="Laisser vide pour ne pas changer">
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="active" th:field="*{active}">
+                                    <label class="form-check-label" for="active">Compte actif</label>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Enregistrer les modifications
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Rôles actuels</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Pour modifier les rôles de cet utilisateur, utilisez les options dans la liste des utilisateurs.</p>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Rôles attribués:</label>
+                                <div>
+                                    <!-- Note: Ces badges seraient remplis dynamiquement dans une application réelle -->
+                                    <span class="badge bg-danger">Admin</span>
+                                    <span class="badge bg-info text-white">Utilisateur</span>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Attention:</strong> La modification des rôles peut affecter les permissions de l'utilisateur.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Statut du compte</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">État actuel:</label>
+                                <div>
+                                    <span th:if="${userDTO.active}" class="badge bg-success">Actif</span>
+                                    <span th:unless="${userDTO.active}" class="badge bg-danger">Inactif</span>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Info:</strong> Un utilisateur inactif ne peut pas se connecter à l'application.
+                            </div>
+                            
+                            <p class="mb-0">
+                                Vous pouvez activer ou désactiver ce compte en utilisant la case à cocher dans le formulaire.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Historique des activités -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Historique des activités</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-secondary">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Cette fonctionnalité sera disponible dans une prochaine version.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

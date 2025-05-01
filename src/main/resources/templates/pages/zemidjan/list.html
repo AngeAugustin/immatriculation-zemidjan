@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-people"></i> Liste des Zémidjans</h2>
+                <div sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')">
+                    <a th:href="@{/zemidjans/create}" class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i> Nouveau Zémidjan
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Filtres et recherche -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form th:action="@{/zemidjans/search}" method="get" class="d-flex">
+                                <input type="text" class="form-control me-2" name="keyword" placeholder="Rechercher un Zémidjan...">
+                                <button type="submit" class="btn btn-outline-primary">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-3" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <select class="form-select" id="communeFilter">
+                                <option value="">Toutes les communes</option>
+                                <option value="Cotonou">Cotonou</option>
+                                <option value="Porto-Novo">Porto-Novo</option>
+                                <option value="Parakou">Parakou</option>
+                                <option value="Abomey-Calavi">Abomey-Calavi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter">
+                                <option value="">Tous les statuts</option>
+                                <option value="true">À jour</option>
+                                <option value="false">Non à jour</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Liste des Zémidjans -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Numéro</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Commune</th>
+                                    <th>Date immat.</th>
+                                    <th>Cotisation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="zemidjan : ${zemidjans}">
+                                    <td th:text="${zemidjan.id}">1</td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${zemidjan.numeroImmatriculation}">XXX-XX-XXXXX-X</span>
+                                    </td>
+                                    <td th:text="${zemidjan.nom}">Nom</td>
+                                    <td th:text="${zemidjan.prenom}">Prénom</td>
+                                    <td th:text="${zemidjan.commune}">Commune</td>
+                                    <td th:text="${#temporals.format(zemidjan.dateImmatriculation, 'dd/MM/yyyy')}">01/01/2025</td>
+                                    <td>
+                                        <span th:if="${zemidjan.cotisationAJour}" class="badge bg-success">À jour</span>
+                                        <span th:unless="${zemidjan.cotisationAJour}" class="badge bg-danger">Non à jour</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a th:href="@{'/zemidjans/' + ${zemidjan.id}}" class="btn btn-outline-primary" title="Détails">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{'/cotisations/zemidjan/' + ${zemidjan.id}}" class="btn btn-outline-success" title="Cotisations">
+                                                <i class="bi bi-cash-coin"></i>
+                                            </a>
+                                            <a th:href="@{'/zemidjans/' + ${zemidjan.id} + '/edit'}" 
+                                               class="btn btn-outline-secondary"
+                                               sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATEUR')"
+                                               title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger" 
+                                                    data-bs-toggle="modal" 
+                                                    th:data-bs-target="'#deleteModal' + ${zemidjan.id}"
+                                                    sec:authorize="hasRole('ROLE_ADMIN')"
+                                                    title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Modal de confirmation de suppression -->
+                                        <div class="modal fade" th:id="'deleteModal' + ${zemidjan.id}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirmation de suppression</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Êtes-vous sûr de vouloir supprimer le Zémidjan <strong th:text="${zemidjan.prenom + ' ' + zemidjan.nom}">Nom</strong> ?</p>
+                                                        <p class="text-danger">Cette action est irréversible.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                        <form th:action="@{'/zemidjans/' + ${zemidjan.id} + '/delete'}" method="post">
+                                                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(zemidjans)}">
+                                    <td colspan="8" class="text-center py-3">Aucun Zémidjan trouvé</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="card-footer" th:if="${totalPages > 0}">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0">
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/zemidjans(page=0)}" aria-label="Première">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                <a class="page-link" th:href="@{/zemidjans(page=${currentPage - 1})}" aria-label="Précédente">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                                th:classappend="${currentPage == i} ? 'active'">
+                                <a class="page-link" th:href="@{/zemidjans(page=${i})}" th:text="${i + 1}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/zemidjans(page=${currentPage + 1})}" aria-label="Suivante">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                                <a class="page-link" th:href="@{/zemidjans(page=${totalPages - 1})}" aria-label="Dernière">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Information -->
+            <div class="mt-4">
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <span>Total de Zémidjans: <strong th:text="${totalItems}">0</strong></span>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

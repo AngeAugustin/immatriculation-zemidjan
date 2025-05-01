@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-person-plus-fill"></i> Nouvel utilisateur</h2>
+                <div>
+                    <a th:href="@{/admin/users}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Retour à la liste
+                    </a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations de l'utilisateur</h5>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/users/create}" th:object="${userDTO}" method="post" class="needs-validation" novalidate>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom" th:field="*{nom}" 
+                                               placeholder="Nom de famille" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prenom" th:field="*{prenom}" 
+                                               placeholder="Prénom" required>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                        <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                               placeholder="Adresse email" required>
+                                    </div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="commune" class="form-label">Commune <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="commune" th:field="*{commune}" required>
+                                        <option value="" selected disabled>Choisir une commune</option>
+                                        <option value="Cotonou">Cotonou</option>
+                                        <option value="Porto-Novo">Porto-Novo</option>
+                                        <option value="Parakou">Parakou</option>
+                                        <option value="Abomey-Calavi">Abomey-Calavi</option>
+                                        <option value="Bohicon">Bohicon</option>
+                                        <option value="Natitingou">Natitingou</option>
+                                        <option value="Ouidah">Ouidah</option>
+                                        <option value="Lokossa">Lokossa</option>
+                                        <option value="Abomey">Abomey</option>
+                                        <option value="Djougou">Djougou</option>
+                                    </select>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('commune')}" th:errors="*{commune}"></div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                                   placeholder="Mot de passe" required>
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="confirmPassword" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                            <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" 
+                                                   placeholder="Confirmer le mot de passe" required>
+                                        </div>
+                                        <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="active" th:field="*{active}" checked>
+                                    <label class="form-check-label" for="active">Activer le compte</label>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Créer l'utilisateur
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Informations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Note:</strong> Par défaut, l'utilisateur sera créé avec le rôle "Utilisateur".
+                                Vous pourrez modifier ses rôles après sa création.
+                            </div>
+                            
+                            <p>Une fois l'utilisateur créé, vous pourrez:</p>
+                            <ul>
+                                <li>Lui attribuer des rôles supplémentaires</li>
+                                <li>Modifier ses informations</li>
+                                <li>Activer ou désactiver son compte</li>
+                            </ul>
+                            
+                            <hr>
+                            
+                            <p class="mb-0">
+                                <span class="text-danger">*</span> Champs obligatoires
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Politique de mot de passe</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Le mot de passe doit contenir au minimum:</p>
+                            <ul>
+                                <li>6 caractères</li>
+                                <li>Une lettre majuscule</li>
+                                <li>Une lettre minuscule</li>
+                                <li>Un chiffre</li>
+                            </ul>
+                            <p class="mb-0">Exemple: <code>Passw0rd</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

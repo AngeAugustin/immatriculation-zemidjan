@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<head>
+    <th:block th:replace="~{fragments/header :: head}"></th:block>
+</head>
+<body class="d-flex flex-column h-100">
+    <th:block th:replace="~{fragments/layout :: main-layout(~{::section})}">
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="border-bottom pb-2"><i class="bi bi-file-earmark-text"></i> Rapport de cotisations</h2>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimer
+                    </button>
+                    <a th:href="@{/cotisations/rapport}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left"></i> Retour au formulaire
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Paramètres du rapport</h5>
+                        <span class="badge bg-info text-white">
+                            Du <span th:text="${#temporals.format(dateDebut, 'dd/MM/yyyy')}">01/04/2025</span>
+                            au <span th:text="${#temporals.format(dateFin, 'dd/MM/yyyy')}">30/04/2025</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-0">
+                                <strong>Période:</strong> 
+                                Du <span th:text="${#temporals.format(dateDebut, 'dd MMMM yyyy')}">01 Avril 2025</span>
+                                au <span th:text="${#temporals.format(dateFin, 'dd MMMM yyyy')}">30 Avril 2025</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="mb-0">
+                                <strong>Généré le:</strong> <span th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy à HH:mm')}">01 Mai 2025 à 10:30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Résumé statistique -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-bg-primary h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-white-50">Total cotisations</h6>
+                            <h2 class="mb-0" th:text="${totalCotisations}">25</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-bg-success h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-white-50">Montant collecté</h6>
+                            <h2 class="mb-0" th:text="${montantTotal + ' FCFA'}">25 000 FCFA</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-bg-warning text-white h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-white-50">Montant moyen/jour</h6>
+                            <h2 class="mb-0" th:text="${#numbers.formatDecimal(montantTotal / ((dateFin.toEpochDay() - dateDebut.toEpochDay()) + 1), 0, 'WHITESPACE', 0, 'POINT') + ' FCFA'}">833 FCFA</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-bg-info text-white h-100">
+                        <div class="card-body">
+                            <h6 class="card-title text-white-50">Nombre de jours</h6>
+                            <h2 class="mb-0" th:text="${(dateFin.toEpochDay() - dateDebut.toEpochDay()) + 1}">30</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Liste des cotisations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-list-check"></i> Liste des cotisations</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Zémidjan</th>
+                                    <th>Numéro immat.</th>
+                                    <th>Commune</th>
+                                    <th>Période</th>
+                                    <th>Montant</th>
+                                    <th>Date de paiement</th>
+                                    <th>Enregistré par</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cotisation : ${cotisations}">
+                                    <td th:text="${cotisation.id}">1</td>
+                                    <td>
+                                        <a th:href="@{'/zemidjans/' + ${cotisation.zemidjan.id}}" class="text-decoration-none">
+                                            <span th:text="${cotisation.zemidjan.prenom + ' ' + cotisation.zemidjan.nom}">
+                                                Nom complet
+                                            </span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${cotisation.zemidjan.numeroImmatriculation}">
+                                            XXX-XX-XXXXX-X
+                                        </span>
+                                    </td>
+                                    <td th:text="${cotisation.zemidjan.commune}">Commune</td>
+                                    <td th:text="${cotisation.moisConcerne + ' ' + cotisation.anneeConcerne}">
+                                        Avril 2025
+                                    </td>
+                                    <td th:text="${cotisation.montant + ' FCFA'}">1000 FCFA</td>
+                                    <td th:text="${#temporals.format(cotisation.datePaiement, 'dd/MM/yyyy')}">
+                                        01/04/2025
+                                    </td>
+                                    <td th:text="${cotisation.enregistrePar.prenom + ' ' + cotisation.enregistrePar.nom}">
+                                        Admin Système
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(cotisations)}">
+                                    <td colspan="8" class="text-center py-3">Aucune cotisation trouvée pour cette période</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Répartition par commune -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Répartition par commune</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Commune</th>
+                                    <th>Nombre de cotisations</th>
+                                    <th>Montant total</th>
+                                    <th>Pourcentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stat : ${statsParCommune}">
+                                    <td th:text="${stat.commune}">Commune</td>
+                                    <td th:text="${stat.nombreCotisations}">0</td>
+                                    <td th:text="${stat.montantTotal + ' FCFA'}">0 FCFA</td>
+                                    <td th:text="${stat.pourcentage + '%'}">0%</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th>Total</th>
+                                    <th th:text="${totalCotisations}">0</th>
+                                    <th th:text="${montantTotal + ' FCFA'}">0 FCFA</th>
+                                    <th>100%</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Répartition par jour -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-calendar3"></i> Répartition par jour</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Nombre</th>
+                                    <th>Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stat : ${statsParJour}">
+                                    <td th:text="${#temporals.format(stat.date, 'dd/MM/yyyy')}">Date</td>
+                                    <td th:text="${stat.nombreCotisations}">0</td>
+                                    <td th:text="${stat.montantTotal + ' FCFA'}">0 FCFA</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-3" th:if="${jourMax != null}">
+                        <p class="mb-0">
+                            <i class="bi bi-info-circle-fill text-info me-2"></i>
+                            Le jour avec le plus grand nombre de cotisations était le 
+                            <strong th:text="${#temporals.format(jourMax.date, 'dd/MM/yyyy')}">Date</strong> 
+                            avec <strong th:text="${jourMax.nombreCotisations}">0</strong> cotisations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notes et conclusions -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-journal-text"></i> Conclusions</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Pour la période du <strong th:text="${#temporals.format(dateDebut, 'dd MMMM yyyy')}">01 Avril 2025</strong> 
+                        au <strong th:text="${#temporals.format(dateFin, 'dd MMMM yyyy')}">30 Avril 2025</strong>, 
+                        un total de <strong th:text="${totalCotisations}">25</strong> cotisations ont été enregistrées, 
+                        pour un montant total de <strong th:text="${montantTotal + ' FCFA'}">25 000 FCFA</strong>.
+                    </p>
+                    
+                    <p>
+                        La commune avec le plus grand nombre de cotisations est <strong>Cotonou</strong> avec 
+                        <strong>12</strong> cotisations, représentant <strong>48%</strong> du total.
+                    </p>
+                    
+                    <p class="mb-0">
+                        Le taux moyen de collecte sur cette période est de <strong th:text="${#numbers.formatDecimal(montantTotal / ((dateFin.toEpochDay() - dateDebut.toEpochDay()) + 1), 0, 'WHITESPACE', 0, 'POINT') + ' FCFA'}">833 FCFA</strong> par jour.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Footer d'impression -->
+            <div class="d-none d-print-block mt-5">
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <small>Généré le <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy à HH:mm')}">01/05/2025 à 10:30</span></small>
+                    </div>
+                    <div>
+                        <small>Immatriculation des Zémidjans</small>
+                    </div>
+                    <div>
+                        <small>Page 1/1</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+    
+    <!-- Styles spécifiques pour l'impression -->
+    <style>
+        @media print {
+            .btn, .navbar, .footer {
+                display: none !important;
+            }
+            .card {
+                border: 1px solid #ddd !important;
+                break-inside: avoid;
+            }
+            .card-header {
+                background-color: #f8f9fa !important;
+                color: #000 !important;
+            }
+            .badge {
+                border: 1px solid #000 !important;
+                padding: 0.25em 0.5em !important;
+            }
+            .text-bg-primary, .text-bg-success, .text-bg-warning, .text-bg-info {
+                color: #000 !important;
+                background-color: #f8f9fa !important;
+            }
+        }
+    </style>
+</body>
+</html>
